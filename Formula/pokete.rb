@@ -43,7 +43,7 @@ class Pokete < Formula
   def install
     libexec.mkdir; bin.mkdir
 
-    if build.without?("python@3.9")
+    if build.without?("python@3.9") then
       resource("appimage-python3.9").stage do
         (Pathname.pwd/"python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage").chmod(0755)
         system "./python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage", "--appimage-extract"
