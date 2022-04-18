@@ -14,7 +14,7 @@ class PoketeAT060 < Formula
 
   resource("appimage-python3.9") do
     url "https://github.com/niess/python-appimage/releases/download/python3.9/python3.9.12-cp39-cp39-manylinux2014_x86_64.AppImage"
-    sha256 "949427e55791fb91107bdd497a873ad375298445aac3b3d11ec18e10d0dbaf0d"
+    sha256 "318b380d944e30ff7dda62c1baa92307ed08f1aa160ebcdd68a4e7c428e68416"
   end if build.without?("python@3.9")
 
   resource("scrap_engine") do
@@ -57,6 +57,9 @@ class PoketeAT060 < Formula
       end
       (buildpath/"pokete").write(pokete_sh(libexec))
     end
+
+    system "#{Formula["imagemagick"].opt_bin}/convert", \
+      "#{buildpath}/assets/pokete.png", "-resize", "256x256!", "#{buildpath}/assets/pokete-256x256.png"
  
     bin.install buildpath/"pokete"
     (libexec/"pokete").mkpath
@@ -79,6 +82,78 @@ class PoketeAT060 < Formula
 end
 
 __END__
+diff --git a/pokete.py b/pokete.py
+index 094c4a0..79cad0f 100755
+--- a/pokete.py
++++ b/pokete.py
+@@ -1468,6 +1468,11 @@ def autosave():
+ 
+ def save():
+     """Saves all relevant data to savefile"""
++    _savepath = os.environ.get("POKETEDIR", "")
++    if _savepath == "":
++        _savepath = HOME + SAVEPATH
++    else:
++        _savepath = os.path.abspath(_savepath + "/json")
+     _si = {
+         "user": figure.name,
+         "ver": VERSION,
+@@ -1485,14 +1490,19 @@ def save():
+         # filters doublicates from used_npcs
+         "used_npcs": list(dict.fromkeys(used_npcs))
+     }
+-    with open(HOME + SAVEPATH + "/pokete.json", "w+") as file:
++    with open(_savepath + "/pokete.json", "w+") as file:
+         # writes the data to the save file in a nice format
+         json.dump(_si, file, indent=4)
+ 
+ 
+ def read_save():
+     """Reads form savefile"""
+-    Path(HOME + SAVEPATH).mkdir(parents=True, exist_ok=True)
++    _savepath = os.environ.get("POKETEDIR", "")
++    if _savepath == "":
++        _savepath = HOME + SAVEPATH
++    else:
++        _savepath = os.path.abspath(_savepath + "/json")
++    Path(_savepath).mkdir(parents=True, exist_ok=True)
+     # Default test session_info
+     _si = {
+         "user": "DEFAULT",
+@@ -1513,13 +1523,13 @@ def read_save():
+         "used_npcs": []
+     }
+ 
+-    if (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
+-        and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
+-        with open(HOME + SAVEPATH + "/pokete.py") as _file:
++    if (not os.path.exists(_savepath + "/pokete.json")
++        and os.path.exists(_savepath + "/pokete.py")):
++        with open(_savepath + "/pokete.py") as _file:
+             exec(_file.read())
+         _si = json.loads(json.dumps(session_info))
+-    elif os.path.exists(HOME + SAVEPATH + "/pokete.json"):
+-        with open(HOME + SAVEPATH + "/pokete.json") as _file:
++    elif os.path.exists(_savepath + "/pokete.json"):
++        with open(_savepath + "/pokete.json") as _file:
+             _si = json.load(_file)
+     return _si
+ 
+@@ -2663,7 +2673,13 @@ if __name__ == "__main__":
+     # Loading mods
+     if settings.load_mods:
+         try:
+-            import mods
++            _modpath = os.environ.get("POKETEDIR", "")
++            if _modpath == "":
++                import mods
++            else:
++                _modpath = os.path.abspath(_modpath)
++                sys.path.append(_modpath)
++                from . import mods
+         except ModError as err:
+             error_box = InfoBox(str(err), "Mod-loading Error")
+             error_box.center_add(loading_screen.map)
 diff --git a/pokete_classes/input.py b/pokete_classes/input.py
 index d066d59..ed5a287 100644
 --- a/pokete_classes/input.py
