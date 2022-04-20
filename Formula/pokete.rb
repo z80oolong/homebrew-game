@@ -90,115 +90,109 @@ class Pokete < Formula
 end
 
 __END__
-/bin/bash: line 0: cd: pokete-eaw: No such file or directory
 diff --git a/pokete.py b/pokete.py
-index 094c4a0..79cad0f 100755
+index 2b2143d..5551d54 100755
 --- a/pokete.py
 +++ b/pokete.py
-@@ -1468,6 +1468,11 @@ def autosave():
- 
- def save():
-     """Saves all relevant data to savefile"""
-+    _savepath = os.environ.get("POKETEDIR", "")
-+    if _savepath == "":
-+        _savepath = HOME + SAVEPATH
-+    else:
-+        _savepath = os.path.abspath(_savepath + "/json")
-     _si = {
-         "user": figure.name,
-         "ver": VERSION,
-@@ -1485,14 +1490,19 @@ def save():
-         # filters doublicates from used_npcs
-         "used_npcs": list(dict.fromkeys(used_npcs))
+@@ -16,6 +16,7 @@ import math
+ import socket
+ import json
+ import logging
++import poketedir
+ from pathlib import Path
+ import scrap_engine as se
+ import pokete_data as p_data
+@@ -940,7 +941,7 @@ def save():
+         # filters doublicates from figure.used_npcs
+         "used_npcs": list(dict.fromkeys(figure.used_npcs))
      }
 -    with open(HOME + SAVEPATH + "/pokete.json", "w+") as file:
-+    with open(_savepath + "/pokete.json", "w+") as file:
++    with open(poketedir.savepath() + "/pokete.json", "w+") as file:
          # writes the data to the save file in a nice format
          json.dump(_si, file, indent=4)
- 
- 
- def read_save():
-     """Reads form savefile"""
+     logging.info("[General] Saved")
+@@ -950,7 +951,7 @@ def read_save():
+     """Reads form savefile
+     RETURNS:
+         session_info dict"""
 -    Path(HOME + SAVEPATH).mkdir(parents=True, exist_ok=True)
-+    _savepath = os.environ.get("POKETEDIR", "")
-+    if _savepath == "":
-+        _savepath = HOME + SAVEPATH
-+    else:
-+        _savepath = os.path.abspath(_savepath + "/json")
-+    Path(_savepath).mkdir(parents=True, exist_ok=True)
++    Path(poketedir.savepath()).mkdir(parents=True, exist_ok=True)
      # Default test session_info
      _si = {
          "user": "DEFAULT",
-@@ -1513,13 +1523,13 @@ def read_save():
+@@ -974,14 +975,14 @@ def read_save():
          "used_npcs": []
      }
  
 -    if (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
 -        and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
--        with open(HOME + SAVEPATH + "/pokete.py") as _file:
-+    if (not os.path.exists(_savepath + "/pokete.json")
-+        and os.path.exists(_savepath + "/pokete.py")):
-+        with open(_savepath + "/pokete.py") as _file:
-             exec(_file.read())
-         _si = json.loads(json.dumps(session_info))
++    if (not os.path.exists(poketedir.savepath() + "/pokete.json")
++        and os.path.exists(poketedir.savepath() + "/pokete.py")):
+         l_dict = {}
+-        with open(HOME + SAVEPATH + "/pokete.py", "r") as _file:
++        with open(poketedir.savepath() + "/pokete.py", "r") as _file:
+             exec(_file.read(), {"session_info": _si}, l_dict)
+         _si = json.loads(json.dumps(l_dict["session_info"]))
 -    elif os.path.exists(HOME + SAVEPATH + "/pokete.json"):
 -        with open(HOME + SAVEPATH + "/pokete.json") as _file:
-+    elif os.path.exists(_savepath + "/pokete.json"):
-+        with open(_savepath + "/pokete.json") as _file:
++    elif os.path.exists(poketedir.savepath() + "/pokete.json"):
++        with open(poketedir.savepath() + "/pokete.json") as _file:
              _si = json.load(_file)
      return _si
  
-@@ -2663,7 +2673,13 @@ if __name__ == "__main__":
+@@ -1731,7 +1732,7 @@ if __name__ == "__main__":
+     loading_screen()
+ 
+     # logging config
+-    log_file = f"{HOME}{SAVEPATH}/pokete.log" if do_logging else None
++    log_file = f"{poketedir.logpath()}/pokete.log" if do_logging else None
+     logging.basicConfig(filename=log_file,
+                         encoding='utf-8',
+                         format='[%(asctime)s][%(levelname)s]: %(message)s',
+@@ -1751,6 +1752,7 @@ if __name__ == "__main__":
      # Loading mods
-     if settings.load_mods:
+     if settings("load_mods").val:
          try:
--            import mods
-+            _modpath = os.environ.get("POKETEDIR", "")
-+            if _modpath == "":
-+                import mods
-+            else:
-+                _modpath = os.path.abspath(_modpath)
-+                sys.path.append(_modpath)
-+                from . import mods
++            sys.path.append(poketedir.modspath())
+             import mods
          except ModError as err:
              error_box = InfoBox(str(err), "Mod-loading Error")
-             error_box.center_add(loading_screen.map)
 diff --git a/pokete_classes/input.py b/pokete_classes/input.py
-index d066d59..ed5a287 100644
+index 3bcf29f..8ca29b2 100644
 --- a/pokete_classes/input.py
 +++ b/pokete_classes/input.py
-@@ -8,7 +8,7 @@ from .ui_elements import InfoBox, InputBox
- def text_input(obj, _map, name, ev, wrap_len, max_len=1000000):
-     """Processes text input"""
-     ev.clear()
+@@ -16,7 +16,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
+         wrap_len: The len at which the text wraps
+         max_len: The len at which the text shall end"""
+     _ev.clear()
 -    obj.rechar(hard_liner(wrap_len, name + "█"))
 +    obj.rechar(hard_liner(wrap_len, name + "_"))
      bname = name
      _map.show()
      while True:
-@@ -24,7 +24,7 @@ def text_input(obj, _map, name, ev, wrap_len, max_len=1000000):
+@@ -32,7 +32,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
                  _map.show()
                  return bname
              name = name[:-1]
 -            obj.rechar(hard_liner(wrap_len, name + "█"))
 +            obj.rechar(hard_liner(wrap_len, name + "_"))
              _map.show()
-             ev.clear()
-         elif ev.get() not in ["", "Key.enter", "exit", "Key.backspace", "Key.shift",
-@@ -32,7 +32,7 @@ def text_input(obj, _map, name, ev, wrap_len, max_len=1000000):
-             if ev.get() == "Key.space":
-                 ev.set("' '")
-             name += str(ev.get().strip("'"))
+             _ev.clear()
+         elif _ev.get() not in ["", "Key.enter", "exit", "Key.backspace",
+@@ -41,7 +41,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
+             if _ev.get() == "Key.space":
+                 _ev.set("' '")
+             name += str(_ev.get().strip("'"))
 -            obj.rechar(hard_liner(wrap_len, name + "█"))
 +            obj.rechar(hard_liner(wrap_len, name + "_"))
              _map.show()
-             ev.clear()
-         std_loop(ev)
+             _ev.clear()
+         std_loop(_map.name == "movemap")
 diff --git a/pokete_classes/ui_elements.py b/pokete_classes/ui_elements.py
-index 0946260..d07d9a1 100644
+index 5dfa714..fa5ef4e 100644
 --- a/pokete_classes/ui_elements.py
 +++ b/pokete_classes/ui_elements.py
-@@ -17,9 +17,9 @@ class StdFrame(se.Frame):
+@@ -20,9 +20,9 @@ class StdFrame(se.Frame):
  
      def __init__(self, height, width):
          super().__init__(width=width, height=height,
@@ -211,3 +205,97 @@ index 0946260..d07d9a1 100644
  
  
  class StdFrame2(se.Frame):
+@@ -162,15 +162,15 @@ class BetterChooserItem(Box):
+ 
+     def choose(self):
+         """Rechars the frame to be highlighted"""
+-        self.frame.rechar(corner_chars=["┏", "┓", "┗", "┛"],
+-                          horizontal_chars=["━", "━"],
+-                          vertical_chars=["┃", "┃"])
++        self.frame.rechar(corner_chars=["@", "@", "@", "@"],
++                          horizontal_chars=["=", "="],
++                          vertical_chars=["|", "|"])
+ 
+     def unchoose(self):
+         """Rechars the frame to be not highlighted"""
+-        self.frame.rechar(corner_chars=["┌", "┐", "└", "┘"],
+-                          horizontal_chars=["─", "─"],
+-                          vertical_chars=["│", "│"])
++        self.frame.rechar(corner_chars=["*", "*", "*", "*"],
++                          horizontal_chars=["-", "-"],
++                          vertical_chars=["|", "|"])
+ 
+ 
+ class BetterChooseBox(Box):
+diff --git a/poketedir.py b/poketedir.py
+new file mode 100644
+index 0000000..3e43784
+--- /dev/null
++++ b/poketedir.py
+@@ -0,0 +1,66 @@
++"""It is a file containing a module that sets the path
++to save the Pokete settings, the path to write the log
++file, and the path to place the MOD from the environment
++variable "POKETEDIR"."""
++
++import os
++import sys
++import shutil
++from pathlib import Path
++from release import SAVEPATH
++
++HOME = os.path.abspath(Path.home())
++
++savePath = None
++logPath  = None
++modsPath = None
++
++def savepath():
++    """Path for saving the 'Pokete' data, setting, etc."""
++    global savePath
++    if savePath == None:
++        savePath = os.environ.get("POKETEDIR", None)
++        if savePath == None:
++            savePath = os.path.abspath(HOME + SAVEPATH)
++        else:
++            savePath = os.path.abspath(savePath + "/json")
++        Path(savePath).mkdir(parents=True, exist_ok=True)
++        return savePath
++    else:
++        return savePath
++
++def logpath():
++    """Path for writing the logfile of 'Pokete'."""
++    global logPath
++    if logPath == None:
++        logPath = os.environ.get("POKETEDIR", None)
++        if logPath == None:
++            logPath = os.path.abspath(HOME + SAVEPATH)
++        else:
++            logPath = os.path.abspath(logPath + "/log")
++        Path(logPath).mkdir(parents=True, exist_ok=True)
++        return logPath
++    else:
++        return logPath
++
++def modspath():
++    """Path for Mods of 'Pokete'."""
++    global modsPath
++    if modsPath == None:
++        modsPath = os.environ.get("POKETEDIR", None)
++        if modsPath == None:
++            modsPath = os.path.abspath(".")
++        else:
++            modsPath = os.path.abspath(modsPath)
++            _orig_modsPath = os.path.abspath("./mods")
++            _new_modsPath = os.path.abspath(modsPath + "/mods")
++            if not os.path.isdir(_new_modsPath):
++                shutil.copytree(_orig_modsPath, _new_modsPath)
++        return modsPath
++    else:
++        return modsPath
++
++if __name__ == "__main__":
++    print(savepath())
++    print(logpath())
++    print(modspath())

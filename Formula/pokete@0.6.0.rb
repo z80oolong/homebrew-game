@@ -10,6 +10,7 @@ class PoketeAT060 < Formula
 
   keg_only :versioned_formula
 
+  depends_on "imagemagick" => :build
   depends_on "python@3.9" => :recommended
 
   resource("appimage-python3.9") do
@@ -83,27 +84,23 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index 094c4a0..79cad0f 100755
+index 094c4a0..58362de 100755
 --- a/pokete.py
 +++ b/pokete.py
-@@ -1468,6 +1468,11 @@ def autosave():
- 
- def save():
-     """Saves all relevant data to savefile"""
-+    _savepath = os.environ.get("POKETEDIR", "")
-+    if _savepath == "":
-+        _savepath = HOME + SAVEPATH
-+    else:
-+        _savepath = os.path.abspath(_savepath + "/json")
-     _si = {
-         "user": figure.name,
-         "ver": VERSION,
-@@ -1485,14 +1490,19 @@ def save():
+@@ -15,6 +15,7 @@ import threading
+ import math
+ import socket
+ import json
++import poketedir
+ from pathlib import Path
+ import scrap_engine as se
+ import pokete_data as p_data
+@@ -1485,14 +1486,14 @@ def save():
          # filters doublicates from used_npcs
          "used_npcs": list(dict.fromkeys(used_npcs))
      }
 -    with open(HOME + SAVEPATH + "/pokete.json", "w+") as file:
-+    with open(_savepath + "/pokete.json", "w+") as file:
++    with open(poketedir.savepath() + "/pokete.json", "w+") as file:
          # writes the data to the save file in a nice format
          json.dump(_si, file, indent=4)
  
@@ -111,49 +108,37 @@ index 094c4a0..79cad0f 100755
  def read_save():
      """Reads form savefile"""
 -    Path(HOME + SAVEPATH).mkdir(parents=True, exist_ok=True)
-+    _savepath = os.environ.get("POKETEDIR", "")
-+    if _savepath == "":
-+        _savepath = HOME + SAVEPATH
-+    else:
-+        _savepath = os.path.abspath(_savepath + "/json")
-+    Path(_savepath).mkdir(parents=True, exist_ok=True)
++    Path(poketedir.savepath()).mkdir(parents=True, exist_ok=True)
      # Default test session_info
      _si = {
          "user": "DEFAULT",
-@@ -1513,13 +1523,13 @@ def read_save():
+@@ -1513,13 +1514,13 @@ def read_save():
          "used_npcs": []
      }
  
 -    if (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
 -        and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
 -        with open(HOME + SAVEPATH + "/pokete.py") as _file:
-+    if (not os.path.exists(_savepath + "/pokete.json")
-+        and os.path.exists(_savepath + "/pokete.py")):
-+        with open(_savepath + "/pokete.py") as _file:
++    if (not os.path.exists(poketedir.savepath() + "/pokete.json")
++        and os.path.exists(poketedir.savepath() + "/pokete.py")):
++        with open(poketedir.savepath() + "/pokete.py", "r") as _file:
              exec(_file.read())
          _si = json.loads(json.dumps(session_info))
 -    elif os.path.exists(HOME + SAVEPATH + "/pokete.json"):
 -        with open(HOME + SAVEPATH + "/pokete.json") as _file:
-+    elif os.path.exists(_savepath + "/pokete.json"):
-+        with open(_savepath + "/pokete.json") as _file:
++    elif os.path.exists(poketedir.savepath() + "/pokete.json"):
++        with open(poketedir.savepath() + "/pokete.json") as _file:
              _si = json.load(_file)
      return _si
  
-@@ -2663,7 +2673,13 @@ if __name__ == "__main__":
+@@ -2663,6 +2664,7 @@ if __name__ == "__main__":
      # Loading mods
      if settings.load_mods:
          try:
--            import mods
-+            _modpath = os.environ.get("POKETEDIR", "")
-+            if _modpath == "":
-+                import mods
-+            else:
-+                _modpath = os.path.abspath(_modpath)
-+                sys.path.append(_modpath)
-+                from . import mods
++            sys.path.append(poketedir.modspath())
+             import mods
          except ModError as err:
              error_box = InfoBox(str(err), "Mod-loading Error")
-             error_box.center_add(loading_screen.map)
 diff --git a/pokete_classes/input.py b/pokete_classes/input.py
 index d066d59..ed5a287 100644
 --- a/pokete_classes/input.py
@@ -202,3 +187,75 @@ index 0946260..d07d9a1 100644
  
  
  class StdFrame2(se.Frame):
+diff --git a/poketedir.py b/poketedir.py
+new file mode 100644
+index 0000000..3e43784
+--- /dev/null
++++ b/poketedir.py
+@@ -0,0 +1,66 @@
++"""It is a file containing a module that sets the path
++to save the Pokete settings, the path to write the log
++file, and the path to place the MOD from the environment
++variable "POKETEDIR"."""
++
++import os
++import sys
++import shutil
++from pathlib import Path
++from release import SAVEPATH
++
++HOME = os.path.abspath(Path.home())
++
++savePath = None
++logPath  = None
++modsPath = None
++
++def savepath():
++    """Path for saving the 'Pokete' data, setting, etc."""
++    global savePath
++    if savePath == None:
++        savePath = os.environ.get("POKETEDIR", None)
++        if savePath == None:
++            savePath = os.path.abspath(HOME + SAVEPATH)
++        else:
++            savePath = os.path.abspath(savePath + "/json")
++        Path(savePath).mkdir(parents=True, exist_ok=True)
++        return savePath
++    else:
++        return savePath
++
++def logpath():
++    """Path for writing the logfile of 'Pokete'."""
++    global logPath
++    if logPath == None:
++        logPath = os.environ.get("POKETEDIR", None)
++        if logPath == None:
++            logPath = os.path.abspath(HOME + SAVEPATH)
++        else:
++            logPath = os.path.abspath(logPath + "/log")
++        Path(logPath).mkdir(parents=True, exist_ok=True)
++        return logPath
++    else:
++        return logPath
++
++def modspath():
++    """Path for Mods of 'Pokete'."""
++    global modsPath
++    if modsPath == None:
++        modsPath = os.environ.get("POKETEDIR", None)
++        if modsPath == None:
++            modsPath = os.path.abspath(".")
++        else:
++            modsPath = os.path.abspath(modsPath)
++            _orig_modsPath = os.path.abspath("./mods")
++            _new_modsPath = os.path.abspath(modsPath + "/mods")
++            if not os.path.isdir(_new_modsPath):
++                shutil.copytree(_orig_modsPath, _new_modsPath)
++        return modsPath
++    else:
++        return modsPath
++
++if __name__ == "__main__":
++    print(savepath())
++    print(logpath())
++    print(modspath())
