@@ -9,6 +9,7 @@
 なお、現時点では、以下のゲームソフトに対応しています。
 
 - 人気ゲームポケモンライクのテキストベースゲームである [Pokete][POKE] 
+- GNU による西洋双六ゲームである [GNU Backgammon][GNBG] 
 
 ## 使用法
 
@@ -52,6 +53,7 @@
 
 [BREW]:https://linuxbrew.sh/
 [POKE]:https://github.com/lxgr-linux/pokete
+[GNBG]:https://www.gnu.org/software/gnubg/
 [THER]:https://qiita.com/thermes
 [THBR]:https://qiita.com/thermes/items/926b478ff6e3758ecfea
 [BSD2]:https://opensource.org/licenses/BSD-2-Clause
