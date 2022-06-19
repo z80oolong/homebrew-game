@@ -84,7 +84,7 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index 094c4a0..58362de 100755
+index 094c4a0..cdeb2c0 100755
 --- a/pokete.py
 +++ b/pokete.py
 @@ -15,6 +15,7 @@ import threading
@@ -135,7 +135,7 @@ index 094c4a0..58362de 100755
      # Loading mods
      if settings.load_mods:
          try:
-+            sys.path.append(poketedir.modspath())
++            sys.path.insert(0, poketedir.modspath())
              import mods
          except ModError as err:
              error_box = InfoBox(str(err), "Mod-loading Error")
@@ -189,7 +189,7 @@ index 0946260..d07d9a1 100644
  class StdFrame2(se.Frame):
 diff --git a/poketedir.py b/poketedir.py
 new file mode 100644
-index 0000000..3e43784
+index 0000000..05145c6
 --- /dev/null
 +++ b/poketedir.py
 @@ -0,0 +1,66 @@
@@ -216,7 +216,7 @@ index 0000000..3e43784
 +    if savePath == None:
 +        savePath = os.environ.get("POKETEDIR", None)
 +        if savePath == None:
-+            savePath = os.path.abspath(HOME + SAVEPATH)
++            savePath = os.path.abspath(HOME + SAVEPATH + "/json")
 +        else:
 +            savePath = os.path.abspath(savePath + "/json")
 +        Path(savePath).mkdir(parents=True, exist_ok=True)
@@ -230,7 +230,7 @@ index 0000000..3e43784
 +    if logPath == None:
 +        logPath = os.environ.get("POKETEDIR", None)
 +        if logPath == None:
-+            logPath = os.path.abspath(HOME + SAVEPATH)
++            logPath = os.path.abspath(HOME + SAVEPATH + "/log")
 +        else:
 +            logPath = os.path.abspath(logPath + "/log")
 +        Path(logPath).mkdir(parents=True, exist_ok=True)
@@ -244,13 +244,13 @@ index 0000000..3e43784
 +    if modsPath == None:
 +        modsPath = os.environ.get("POKETEDIR", None)
 +        if modsPath == None:
-+            modsPath = os.path.abspath(".")
++            modsPath = os.path.abspath(HOME + SAVEPATH)
 +        else:
 +            modsPath = os.path.abspath(modsPath)
-+            _orig_modsPath = os.path.abspath("./mods")
-+            _new_modsPath = os.path.abspath(modsPath + "/mods")
-+            if not os.path.isdir(_new_modsPath):
-+                shutil.copytree(_orig_modsPath, _new_modsPath)
++        _orig_modsPath = os.path.abspath(os.path.dirname(__file__) + "/mods")
++        _new_modsPath = os.path.abspath(modsPath + "/mods")
++        if not os.path.isdir(_new_modsPath):
++            shutil.copytree(_orig_modsPath, _new_modsPath)
 +        return modsPath
 +    else:
 +        return modsPath
@@ -259,3 +259,12 @@ index 0000000..3e43784
 +    print(savepath())
 +    print(logpath())
 +    print(modspath())
+diff --git a/release.py b/release.py
+index 9e7487c..dcb8d30 100644
+--- a/release.py
++++ b/release.py
+@@ -1,3 +1,3 @@
+ VERSION = "0.6.0"
+ CODENAME = "Grey Edition"
+-SAVEPATH = "/.cache/pokete"
++SAVEPATH = "/.config/pokete"

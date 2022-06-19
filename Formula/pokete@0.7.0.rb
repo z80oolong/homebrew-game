@@ -1,23 +1,14 @@
-class Pokete < Formula
+class PoketeAT070 < Formula
   include Language::Python::Virtualenv
 
   desc "A terminal based Pokemon like game"
   homepage "https://lxgr-linux.github.io/pokete"
+  url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.7.0.tar.gz"
+  sha256 "d4d948f44a08252da93a9bec4ee5b069016037c2d5f6de120e874f09dd750f26"
+  version "0.7.0"
   license "GPL-3.0"
 
-  stable do
-    url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.7.2.tar.gz"
-    sha256 "7410b2043a53e636bfb8c9ede4c24f933f2bd3f5685ff0b2b3031206d7cbd5f4"
-    version "0.7.2"
-
-    patch :p1, Formula["z80oolong/game/pokete@0.7.2"].diff_data
-  end
-
-  head do
-    url "https://github.com/lxgr-linux/pokete.git"
-
-    patch :p1, :DATA
-  end
+  keg_only :versioned_formula
 
   depends_on "imagemagick" => :build
   depends_on "python@3.9" => :recommended
@@ -31,6 +22,8 @@ class Pokete < Formula
     url "https://github.com/lxgr-linux/scrap_engine/releases/download/1.2.0/scrap_engine-1.2.0.tar.gz"
     sha256 "767ffdc312b550777771cdc9a350a9f6dca73855259dd1fe7197c8736e38cac1"
   end
+
+  patch :p1, :DATA
 
   def pokete_sh(python_home); <<~EOS
     #!/bin/sh
@@ -68,7 +61,7 @@ class Pokete < Formula
 
     system "#{Formula["imagemagick"].opt_bin}/convert", \
       "#{buildpath}/assets/pokete.png", "-resize", "256x256!", "#{buildpath}/assets/pokete-256x256.png"
-
+ 
     bin.install buildpath/"pokete"
     (libexec/"pokete").mkpath
     (libexec/"pokete").install Dir["*"]
@@ -91,7 +84,7 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index c73a9f0..b8f5df5 100755
+index 8a613fe..b84b987 100755
 --- a/pokete.py
 +++ b/pokete.py
 @@ -15,6 +15,7 @@ import math
@@ -112,7 +105,7 @@ index c73a9f0..b8f5df5 100755
          json.dump(_si, file, indent=4)
      logging.info("[General] Saved")
 @@ -751,7 +752,7 @@ def read_save():
-     """Reads from savefile
+     """Reads form savefile
      RETURNS:
          session_info dict"""
 -    Path(HOME + SAVEPATH).mkdir(parents=True, exist_ok=True)
@@ -300,12 +293,12 @@ index 0000000..05145c6
 +    print(logpath())
 +    print(modspath())
 diff --git a/release.py b/release.py
-index 9c17650..7f9df9c 100644
+index 8861b23..d206541 100644
 --- a/release.py
 +++ b/release.py
 @@ -2,5 +2,5 @@
  
- VERSION = "0.7.2"
+ VERSION = "0.7.0"
  CODENAME = "Grey Edition"
 -SAVEPATH = "/.cache/pokete"
 +SAVEPATH = "/.config/pokete"
