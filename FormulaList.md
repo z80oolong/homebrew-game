@@ -18,7 +18,25 @@
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
+### z80oolong/game/pokete@0.7.0
+
+人気ゲームポケモンライクのテキストベースのオープンソースゲームソフトである [Pokete][POKE] について、 [Pokete][POKE] を日本語環境で動作させる際に罫線の文字幅が適切に扱えないために画面表示が崩れる問題を回避したもののうち、安定版 [Pokete 0.7.0][POKE] を導入する為の Formula です。
+
+なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
+
 **この Formula は、 versioned formula であるため、この Formula によって導入される ncurses は、 keg only で導入されることに留意して下さい。**
+
+### z80oolong/game/pokete@0.7.1
+
+人気ゲームポケモンライクのテキストベースのオープンソースゲームソフトである [Pokete][POKE] について、 [Pokete][POKE] を日本語環境で動作させる際に罫線の文字幅が適切に扱えないために画面表示が崩れる問題を回避したもののうち、安定版 [Pokete 0.7.1][POKE] を導入する為の Formula です。
+
+なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
+
+### z80oolong/game/pokete@0.7.2
+
+人気ゲームポケモンライクのテキストベースのオープンソースゲームソフトである [Pokete][POKE] について、 [Pokete][POKE] を日本語環境で動作させる際に罫線の文字幅が適切に扱えないために画面表示が崩れる問題を回避したもののうち、安定版 [Pokete 0.7.2][POKE] を導入する為の Formula です。
+
+なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
 <!-- 外部リンク一覧 -->
 
