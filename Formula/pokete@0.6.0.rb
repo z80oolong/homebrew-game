@@ -85,7 +85,7 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index 094c4a0..41564eb 100755
+index 094c4a0..a186f2a 100755
 --- a/pokete.py
 +++ b/pokete.py
 @@ -15,6 +15,7 @@ import threading
@@ -101,7 +101,7 @@ index 094c4a0..41564eb 100755
          "used_npcs": list(dict.fromkeys(used_npcs))
      }
 -    with open(HOME + SAVEPATH + "/pokete.json", "w+") as file:
-+    with open(poketedir.savepath() + "/pokete.json", "w+") as file:
++    with open(poketedir.savepath() / "pokete.json", "w+") as file:
          # writes the data to the save file in a nice format
          json.dump(_si, file, indent=4)
  
@@ -119,8 +119,8 @@ index 094c4a0..41564eb 100755
  
 -    if (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
 -        and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
-+    if os.path.exists(poketedir.savepath() + "/pokete.json"):
-+        with open(poketedir.savepath() + "/pokete.json") as _file:
++    if os.path.exists(poketedir.savepath() / "pokete.json"):
++        with open(poketedir.savepath() / "pokete.json") as _file:
 +            _si = json.load(_file)
 +    elif (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
 +          and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
@@ -131,7 +131,7 @@ index 094c4a0..41564eb 100755
      # Loading mods
      if settings.load_mods:
          try:
-+            sys.path.insert(0, poketedir.modspath())
++            sys.path.insert(0, str(poketedir.modspath()))
              import mods
          except ModError as err:
              error_box = InfoBox(str(err), "Mod-loading Error")

@@ -85,7 +85,7 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index dbd20ed..a7b36de 100755
+index dbd20ed..d59c224 100755
 --- a/pokete.py
 +++ b/pokete.py
 @@ -15,6 +15,7 @@ import math
@@ -101,7 +101,7 @@ index dbd20ed..a7b36de 100755
          "time": timer.time.time
      }
 -    with open(SAVEPATH / "pokete.json", "w+") as file:
-+    with open(poketedir.savepath() + "/pokete.json", "w+") as file:
++    with open(poketedir.savepath() / "pokete.json", "w+") as file:
          # writes the data to the save file in a nice format
          json.dump(_si, file, indent=4)
      logging.info("[General] Saved")
@@ -119,8 +119,8 @@ index dbd20ed..a7b36de 100755
      }
  
 -    if os.path.exists(SAVEPATH / "pokete.json"):
-+    if os.path.exists(poketedir.savepath() + "/pokete.json"):
-+        with open(poketedir.savepath() + "/pokete.json") as _file:
++    if os.path.exists(poketedir.savepath() / "pokete.json"):
++        with open(poketedir.savepath() / "pokete.json") as _file:
 +            _si = json.load(_file)
 +    elif os.path.exists(SAVEPATH / "pokete.json"):
          with open(SAVEPATH / "pokete.json") as _file:
@@ -130,7 +130,7 @@ index dbd20ed..a7b36de 100755
      # Loading mods
      if settings("load_mods").val:
          try:
-+            sys.path.insert(0, poketedir.modspath())
++            sys.path.insert(0, str(poketedir.modspath()))
              import mods
          except ModError as err:
              error_box = InfoBox(str(err), "Mod-loading Error")
