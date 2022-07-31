@@ -4,13 +4,14 @@ class Pokete < Formula
   desc "A terminal based Pokemon like game"
   homepage "https://lxgr-linux.github.io/pokete"
   license "GPL-3.0"
+  revision 1
 
   stable do
-    url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.7.2.tar.gz"
-    sha256 "7410b2043a53e636bfb8c9ede4c24f933f2bd3f5685ff0b2b3031206d7cbd5f4"
-    version "0.7.2"
+    url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.8.0.tar.gz"
+    sha256 "30d93eda42162ff75fd4e8c9df4508f879b431ce90347c4ea584ae6114749e59"
+    version "0.8.0"
 
-    patch :p1, Formula["z80oolong/game/pokete@0.7.2"].diff_data
+    patch :p1, Formula["z80oolong/game/pokete@0.8.0"].diff_data
   end
 
   head do
@@ -91,7 +92,7 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index 45258d6..7b73da0 100755
+index e703aae..583d4c9 100755
 --- a/pokete.py
 +++ b/pokete.py
 @@ -15,6 +15,7 @@ import math
@@ -120,26 +121,27 @@ index 45258d6..7b73da0 100755
      # Default test session_info
      _si = {
          "user": "DEFAULT",
-@@ -797,8 +798,8 @@ def read_save():
+@@ -797,7 +798,10 @@ def read_save():
          "time": 0
      }
  
 -    if os.path.exists(SAVEPATH / "pokete.json"):
--        with open(SAVEPATH / "pokete.json") as _file:
 +    if os.path.exists(poketedir.savepath() / "pokete.json"):
 +        with open(poketedir.savepath() / "pokete.json") as _file:
++            _si = json.load(_file)
++    elif os.path.exists(SAVEPATH / "pokete.json"):
+         with open(SAVEPATH / "pokete.json") as _file:
              _si = json.load(_file)
      elif os.path.exists(HOME / ".cache" / "pokete" / "pokete.json"):
-         with open(HOME / ".cache" / "pokete" / "pokete.json") as _file:
-@@ -810,7 +811,6 @@ def read_save():
+@@ -810,7 +814,6 @@ def read_save():
          _si = json.loads(json.dumps(l_dict["session_info"]))
      return _si
  
 -
- def on_press(key):
-     """Sets the input to either a character like 'a' or '1', or Key.enter, Key.backspace, Key.space, Key.esc, exit
-     ARGS:
-@@ -1450,7 +1450,7 @@ if __name__ == "__main__":
+ def reset_terminal():
+     """Resets the terminals state"""
+     if sys.platform == "linux":
+@@ -1456,7 +1459,7 @@ if __name__ == "__main__":
      session_info = read_save()
  
      # logging config
@@ -148,7 +150,7 @@ index 45258d6..7b73da0 100755
      logging.basicConfig(filename=log_file,
                          format='[%(asctime)s][%(levelname)s]: %(message)s',
                          level=logging.DEBUG if do_logging else logging.ERROR)
-@@ -1466,6 +1466,7 @@ if __name__ == "__main__":
+@@ -1472,6 +1475,7 @@ if __name__ == "__main__":
      # Loading mods
      if settings("load_mods").val:
          try:
@@ -157,7 +159,7 @@ index 45258d6..7b73da0 100755
          except ModError as err:
              error_box = InfoBox(str(err), "Mod-loading Error")
 diff --git a/pokete_classes/input.py b/pokete_classes/input.py
-index 6e5a753..c3db70f 100644
+index 787b957..ac3d5ff 100644
 --- a/pokete_classes/input.py
 +++ b/pokete_classes/input.py
 @@ -16,7 +16,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
@@ -288,10 +290,10 @@ index 0000000..03bc203
 +    print(logpath())
 +    print(modspath())
 diff --git a/release.py b/release.py
-index 55efda1..09ff03e 100644
+index b05b34e..588544d 100644
 --- a/release.py
 +++ b/release.py
-@@ -7,8 +7,8 @@ VERSION = "0.7.2"
+@@ -7,8 +7,8 @@ VERSION = "0.8.0"
  CODENAME = "Grey Edition"
  SAVEPATH = Path(
      os.environ.get(

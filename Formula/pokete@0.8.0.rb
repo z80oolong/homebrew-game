@@ -1,11 +1,11 @@
-class PoketeAT070 < Formula
+class PoketeAT080 < Formula
   include Language::Python::Virtualenv
 
   desc "A terminal based Pokemon like game"
   homepage "https://lxgr-linux.github.io/pokete"
-  url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.7.0.tar.gz"
-  sha256 "d4d948f44a08252da93a9bec4ee5b069016037c2d5f6de120e874f09dd750f26"
-  version "0.7.0"
+  url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.8.0.tar.gz"
+  sha256 "30d93eda42162ff75fd4e8c9df4508f879b431ce90347c4ea584ae6114749e59"
+  version "0.8.0"
   revision 1
   license "GPL-3.0"
 
@@ -85,7 +85,7 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index 8a613fe..b2ec101 100755
+index dbd20ed..a7b36de 100755
 --- a/pokete.py
 +++ b/pokete.py
 @@ -15,6 +15,7 @@ import math
@@ -96,39 +96,37 @@ index 8a613fe..b2ec101 100755
  from pathlib import Path
  import scrap_engine as se
  import pokete_data as p_data
-@@ -741,7 +742,7 @@ def save():
+@@ -756,7 +757,7 @@ def save():
          "pokete_care": pokete_care.dict(),
          "time": timer.time.time
      }
--    with open(HOME + SAVEPATH + "/pokete.json", "w+") as file:
+-    with open(SAVEPATH / "pokete.json", "w+") as file:
 +    with open(poketedir.savepath() + "/pokete.json", "w+") as file:
          # writes the data to the save file in a nice format
          json.dump(_si, file, indent=4)
      logging.info("[General] Saved")
-@@ -751,7 +752,7 @@ def read_save():
-     """Reads form savefile
+@@ -766,7 +767,7 @@ def read_save():
+     """Reads from savefile
      RETURNS:
          session_info dict"""
--    Path(HOME + SAVEPATH).mkdir(parents=True, exist_ok=True)
+-    Path(SAVEPATH).mkdir(parents=True, exist_ok=True)
 +    Path(poketedir.savepath()).mkdir(parents=True, exist_ok=True)
      # Default test session_info
      _si = {
          "user": "DEFAULT",
-@@ -781,8 +782,11 @@ def read_save():
+@@ -797,7 +798,10 @@ def read_save():
          "time": 0
      }
  
--    if (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
--        and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
+-    if os.path.exists(SAVEPATH / "pokete.json"):
 +    if os.path.exists(poketedir.savepath() + "/pokete.json"):
 +        with open(poketedir.savepath() + "/pokete.json") as _file:
 +            _si = json.load(_file)
-+    elif (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
-+          and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
-         l_dict = {}
-         with open(HOME + SAVEPATH + "/pokete.py", "r") as _file:
-             exec(_file.read(), {"session_info": _si}, l_dict)
-@@ -1424,6 +1428,7 @@ if __name__ == "__main__":
++    elif os.path.exists(SAVEPATH / "pokete.json"):
+         with open(SAVEPATH / "pokete.json") as _file:
+             _si = json.load(_file)
+     elif os.path.exists(HOME / ".cache" / "pokete" / "pokete.json"):
+@@ -1472,6 +1476,7 @@ if __name__ == "__main__":
      # Loading mods
      if settings("load_mods").val:
          try:
@@ -137,10 +135,10 @@ index 8a613fe..b2ec101 100755
          except ModError as err:
              error_box = InfoBox(str(err), "Mod-loading Error")
 diff --git a/pokete_classes/input.py b/pokete_classes/input.py
-index 3d70144..9429d6e 100644
+index 787b957..ac3d5ff 100644
 --- a/pokete_classes/input.py
 +++ b/pokete_classes/input.py
-@@ -15,7 +15,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
+@@ -16,7 +16,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
          wrap_len: The len at which the text wraps
          max_len: The len at which the text shall end"""
      _ev.clear()
@@ -149,7 +147,7 @@ index 3d70144..9429d6e 100644
      bname = name
      _map.show()
      while True:
-@@ -31,7 +31,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
+@@ -33,7 +33,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
                  _map.show()
                  return bname
              name = name[:-1]
@@ -158,20 +156,20 @@ index 3d70144..9429d6e 100644
              _map.show()
              _ev.clear()
          elif ((i := _ev.get()) not in ["", "exit"] and "Key." not in i) \
-@@ -39,7 +39,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
+@@ -41,7 +41,7 @@ def text_input(obj, _map, name, wrap_len, max_len=1000000):
              if _ev.get() == "Key.space":
-                 _ev.set("' '")
-             name += str(_ev.get().strip("'"))
+                 _ev.set(" ")
+             name += str(_ev.get())
 -            obj.rechar(hard_liner(wrap_len, name + "█"))
 +            obj.rechar(hard_liner(wrap_len, name + "_"))
              _map.show()
              _ev.clear()
          std_loop(_map.name == "movemap")
 diff --git a/pokete_classes/ui_elements.py b/pokete_classes/ui_elements.py
-index 5dfa714..1572528 100644
+index 400cada..e4afb35 100644
 --- a/pokete_classes/ui_elements.py
 +++ b/pokete_classes/ui_elements.py
-@@ -20,9 +20,9 @@ class StdFrame(se.Frame):
+@@ -22,9 +22,9 @@ class StdFrame(se.Frame):
  
      def __init__(self, height, width):
          super().__init__(width=width, height=height,

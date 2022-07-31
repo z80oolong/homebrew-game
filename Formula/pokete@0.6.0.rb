@@ -6,6 +6,7 @@ class PoketeAT060 < Formula
   url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.6.0.tar.gz"
   sha256 "465b87230bff6fbd243a31f7778b9c97ea65ca7b37c48caeb1b475b06e48c491"
   version "0.6.0"
+  revision 1
   license "GPL-3.0"
 
   keg_only :versioned_formula
@@ -84,7 +85,7 @@ end
 
 __END__
 diff --git a/pokete.py b/pokete.py
-index 094c4a0..cdeb2c0 100755
+index 094c4a0..41564eb 100755
 --- a/pokete.py
 +++ b/pokete.py
 @@ -15,6 +15,7 @@ import threading
@@ -112,26 +113,21 @@ index 094c4a0..cdeb2c0 100755
      # Default test session_info
      _si = {
          "user": "DEFAULT",
-@@ -1513,13 +1514,13 @@ def read_save():
+@@ -1513,8 +1514,11 @@ def read_save():
          "used_npcs": []
      }
  
 -    if (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
 -        and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
--        with open(HOME + SAVEPATH + "/pokete.py") as _file:
-+    if (not os.path.exists(poketedir.savepath() + "/pokete.json")
-+        and os.path.exists(poketedir.savepath() + "/pokete.py")):
-+        with open(poketedir.savepath() + "/pokete.py", "r") as _file:
++    if os.path.exists(poketedir.savepath() + "/pokete.json"):
++        with open(poketedir.savepath() + "/pokete.json") as _file:
++            _si = json.load(_file)
++    elif (not os.path.exists(HOME + SAVEPATH + "/pokete.json")
++          and os.path.exists(HOME + SAVEPATH + "/pokete.py")):
+         with open(HOME + SAVEPATH + "/pokete.py") as _file:
              exec(_file.read())
          _si = json.loads(json.dumps(session_info))
--    elif os.path.exists(HOME + SAVEPATH + "/pokete.json"):
--        with open(HOME + SAVEPATH + "/pokete.json") as _file:
-+    elif os.path.exists(poketedir.savepath() + "/pokete.json"):
-+        with open(poketedir.savepath() + "/pokete.json") as _file:
-             _si = json.load(_file)
-     return _si
- 
-@@ -2663,6 +2664,7 @@ if __name__ == "__main__":
+@@ -2663,6 +2667,7 @@ if __name__ == "__main__":
      # Loading mods
      if settings.load_mods:
          try:
@@ -189,10 +185,10 @@ index 0946260..d07d9a1 100644
  class StdFrame2(se.Frame):
 diff --git a/poketedir.py b/poketedir.py
 new file mode 100644
-index 0000000..05145c6
+index 0000000..03bc203
 --- /dev/null
 +++ b/poketedir.py
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,55 @@
 +"""It is a file containing a module that sets the path
 +to save the Pokete settings, the path to write the log
 +file, and the path to place the MOD from the environment
@@ -204,8 +200,6 @@ index 0000000..05145c6
 +from pathlib import Path
 +from release import SAVEPATH
 +
-+HOME = os.path.abspath(Path.home())
-+
 +savePath = None
 +logPath  = None
 +modsPath = None
@@ -214,11 +208,8 @@ index 0000000..05145c6
 +    """Path for saving the 'Pokete' data, setting, etc."""
 +    global savePath
 +    if savePath == None:
-+        savePath = os.environ.get("POKETEDIR", None)
-+        if savePath == None:
-+            savePath = os.path.abspath(HOME + SAVEPATH + "/json")
-+        else:
-+            savePath = os.path.abspath(savePath + "/json")
++        savePath = os.environ.get("POKETEDIR", str(SAVEPATH))
++        savePath = Path(os.path.abspath(Path(savePath) / "json"))
 +        Path(savePath).mkdir(parents=True, exist_ok=True)
 +        return savePath
 +    else:
@@ -228,11 +219,8 @@ index 0000000..05145c6
 +    """Path for writing the logfile of 'Pokete'."""
 +    global logPath
 +    if logPath == None:
-+        logPath = os.environ.get("POKETEDIR", None)
-+        if logPath == None:
-+            logPath = os.path.abspath(HOME + SAVEPATH + "/log")
-+        else:
-+            logPath = os.path.abspath(logPath + "/log")
++        logPath = os.environ.get("POKETEDIR", str(SAVEPATH))
++        logPath = Path(os.path.abspath(Path(logPath) / "log"))
 +        Path(logPath).mkdir(parents=True, exist_ok=True)
 +        return logPath
 +    else:
@@ -242,13 +230,10 @@ index 0000000..05145c6
 +    """Path for Mods of 'Pokete'."""
 +    global modsPath
 +    if modsPath == None:
-+        modsPath = os.environ.get("POKETEDIR", None)
-+        if modsPath == None:
-+            modsPath = os.path.abspath(HOME + SAVEPATH)
-+        else:
-+            modsPath = os.path.abspath(modsPath)
-+        _orig_modsPath = os.path.abspath(os.path.dirname(__file__) + "/mods")
-+        _new_modsPath = os.path.abspath(modsPath + "/mods")
++        modsPath = os.environ.get("POKETEDIR", str(SAVEPATH))
++        modsPath = Path(os.path.abspath(modsPath))
++        _orig_modsPath = os.path.abspath(Path(os.path.dirname(__file__)) / "mods")
++        _new_modsPath  = os.path.abspath(Path(modsPath) / "mods")
 +        if not os.path.isdir(_new_modsPath):
 +            shutil.copytree(_orig_modsPath, _new_modsPath)
 +        return modsPath
@@ -259,12 +244,3 @@ index 0000000..05145c6
 +    print(savepath())
 +    print(logpath())
 +    print(modspath())
-diff --git a/release.py b/release.py
-index 9e7487c..dcb8d30 100644
---- a/release.py
-+++ b/release.py
-@@ -1,3 +1,3 @@
- VERSION = "0.6.0"
- CODENAME = "Grey Edition"
--SAVEPATH = "/.cache/pokete"
-+SAVEPATH = "/.config/pokete"
