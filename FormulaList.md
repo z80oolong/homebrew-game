@@ -12,15 +12,20 @@
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
+### z80oolong/game/gnu-backgammon
+
+GNU 版西洋すごろくゲームである GNU Backgammon の最新の安定版を導入する為の Formula です。
+について、 [Pokete][POKE] を日本語環境で動作させる際に罫線の文字幅が適切に扱えないために画面表示が崩れる問題を回避したもののうち、最新の安定版若しくは HEAD 版を導入する為の Formula です。
+
 ### z80oolong/game/pokete@0.6.0
 
 人気ゲームポケモンライクのテキストベースのオープンソースゲームソフトである [Pokete][POKE] について、 [Pokete][POKE] を日本語環境で動作させる際に罫線の文字幅が適切に扱えないために画面表示が崩れる問題を回避したもののうち、安定版 [Pokete 0.6.0][POKE] を導入する為の Formula です。
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+**この Formula は、 versioned formula であるため、この Formula によって導入される [pokete][POKE] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/game/pokete@0.6.0``` コマンドを実行する必要があります。
+この Formula によって導入される [pokete][POKE] を使用するには、 ```brew link --force z80oolong/game/pokete@0.6.0``` コマンドを実行する必要があります。
 
 ### z80oolong/game/pokete@0.7.0
 
@@ -28,9 +33,9 @@
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+**この Formula は、 versioned formula であるため、この Formula によって導入される [pokete][POKE] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.0``` コマンドを実行する必要があります。
+この Formula によって導入される [pokete][POKE] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.0``` コマンドを実行する必要があります。
 
 ### z80oolong/game/pokete@0.7.1
 
@@ -38,9 +43,9 @@
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+**この Formula は、 versioned formula であるため、この Formula によって導入される [pokete][POKE] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.1``` コマンドを実行する必要があります。
+この Formula によって導入される [pokete][POKE] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.1``` コマンドを実行する必要があります。
 
 ### z80oolong/game/pokete@0.7.2
 
@@ -48,9 +53,9 @@
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+**この Formula は、 versioned formula であるため、この Formula によって導入される [pokete][POKE] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.2``` コマンドを実行する必要があります。
+この Formula によって導入される [pokete][POKE] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.2``` コマンドを実行する必要があります。
 
 ### z80oolong/game/pokete@0.7.3
 
@@ -58,9 +63,9 @@
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+**この Formula は、 versioned formula であるため、この Formula によって導入される [pokete][POKE] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.3``` コマンドを実行する必要があります。
+この Formula によって導入される [pokete][POKE] を使用するには、 ```brew link --force z80oolong/game/pokete@0.7.3``` コマンドを実行する必要があります。
 
 ### z80oolong/game/pokete@0.8.0
 
@@ -68,9 +73,9 @@
 
 なお、 [Pokete][POKE] が用いる Python について、 [Linuxbrew][BREW] によって導入した ```python 3.9``` に代えて ```python 3.9``` の AppImage パッケージを用いる場合は、オプションに ```--without-python@3.9``` を指定して下さい。
 
-**この Formula は、 versioned formula であるため、この Formula によって導入される [tmux][TMUX] は、 keg only で導入されることに留意して下さい。**
+**この Formula は、 versioned formula であるため、この Formula によって導入される [pokete][POKE] は、 keg only で導入されることに留意して下さい。**
 
-この Formula によって導入される [tmux][TMUX] を使用するには、 ```brew link --force z80oolong/game/pokete@0.8.0``` コマンドを実行する必要があります。
+この Formula によって導入される [pokete][POKE] を使用するには、 ```brew link --force z80oolong/game/pokete@0.8.0``` コマンドを実行する必要があります。
 
 <!-- 外部リンク一覧 -->
 
