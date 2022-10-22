@@ -6,7 +6,7 @@ class PoketeAT073 < Formula
   url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.7.3.tar.gz"
   sha256 "bee2eb4fc50da086b04101fab8a479719af46e74dd3ccd05d3aa50235a576aed"
   version "0.7.3"
-  revision 1
+  revision 2
   license "GPL-3.0"
 
   keg_only :versioned_formula

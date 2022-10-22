@@ -4,7 +4,7 @@ class Pokete < Formula
   desc "A terminal based Pokemon like game"
   homepage "https://lxgr-linux.github.io/pokete"
   license "GPL-3.0"
-  revision 1
+  revision 2
 
   stable do
     url "https://github.com/lxgr-linux/pokete/archive/refs/tags/0.9.0.tar.gz"
