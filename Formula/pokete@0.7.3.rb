@@ -16,7 +16,7 @@ class PoketeAT073 < Formula
 
   resource("appimage-python3.9") do
     url "https://github.com/niess/python-appimage/releases/download/python3.9/python3.9.15-cp39-cp39-manylinux2014_x86_64.AppImage"
-    sha256 "93087e57e51eeeb33da8ceec8f70627d0c19c9655f78099bb96cedafab9f542f"
+    sha256 "7fe51023d4f2b1a91cfdd076702afa29efcfd86856283a57f30c49eb97a40b78"
   end if build.without?("python@3.9")
 
   resource("scrap_engine") do
